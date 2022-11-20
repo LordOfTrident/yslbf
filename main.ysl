@@ -1,0 +1,174 @@
+	var cells = 0
+	set_size cells 30000
+
+	print "Enter the path of the file to run\n> "
+
+	input
+	var filename c return
+
+	file.read !filename
+	var in c return
+
+	size in
+	var in_size f return
+
+	var i        = 0
+	var cell_idx = 0
+
+	var loops       = 0
+	var loops_count = 0
+
+main_loop:
+	var inst f in $i
+
+	cmp !inst "+"
+	goto_if *inc
+
+	cmp !inst "-"
+	goto_if *dec
+
+	cmp !inst "."
+	goto_if *out
+
+	cmp !inst "<"
+	goto_if *left
+
+	cmp !inst ">"
+	goto_if *right
+
+	cmp !inst "["
+	goto_if *loop_start
+
+	cmp !inst "]"
+	goto_if *loop_end
+
+	goto *continue
+
+inc:
+	var cell f cells $cell_idx
+	var cell + 1
+	var cells s $cell_idx $cell
+
+	goto *continue
+
+dec:
+	var cell f cells $cell_idx
+	var cell - 1
+	var cells s $cell_idx $cell
+
+	goto *continue
+
+out:
+	var cell f cells $cell_idx
+	print !cell
+
+	goto *continue
+
+left:
+	var cell_idx - 1
+
+	goto *continue
+
+right:
+	var cell_idx + 1
+
+	goto *continue
+
+# kill me
+loop_start:
+	var j = 0
+
+find_loop:
+	cmp $j $loops_count
+	goto_if *not_found
+
+	var pos f loops $j
+	cmp $pos $i
+
+	goto_if *continue
+
+	var j + 1
+
+	goto *find_loop
+
+not_found:
+	var cell f cells $cell_idx
+	cmp $cell 0
+
+	goto_if *start_looperis
+	goto *run_loop
+
+start_looperis:
+	var count = 0
+
+skip_loop:
+	var i + 1
+
+	cmp $i $in_size
+	goto_if *run_loop
+
+	var inst f in $i
+
+	cmp !inst "["
+	goto_if *found_loop_start
+
+	cmp !inst "]"
+	goto_if *found_loop_end
+
+	goto *skip_loop
+
+found_loop_start:
+	var count + 1
+
+	goto *skip_loop
+
+found_loop_end:
+	cmp $count 0
+	goto_if *run_loop
+
+	var count - 1
+
+	goto *skip_loop
+
+run_loop:
+	var loops s $loops_count $i
+	var loops_count + 1
+
+	set_size loops $loops_count
+
+	var idx = $loops_count
+	var idx - 1
+	var loops f loops $idx
+
+	goto *continue
+
+loop_end:
+	var cell f cells $cell_idx
+	cmp $cell 0
+
+	goto_if *exit_loop
+
+	var loops_back = $loops_count
+	var loops_back - 1
+
+	var i f loops $loops_back
+	var i - 1
+
+	goto *continue
+
+exit_loop:
+	var loops_count - 1
+
+	goto *continue
+
+continue:
+
+	var i + 1
+
+	cmp $i $in_size
+	goto_if *end
+
+	goto *main_loop
+
+end:
+	exit
