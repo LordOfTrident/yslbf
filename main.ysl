@@ -98,6 +98,7 @@ not_found:
 	goto_if *start_looperis
 	goto *run_loop
 
+# yes i ran out of label name ideas
 start_looperis:
 	var count = 0
 
